@@ -16,10 +16,15 @@ namespace Management
         {
             _levelManager = levelManager;
             _cameraManager = cameraManager;
-            Initialize();
+            
             GameActions.LevelEnd += LevelEnd;
         }
-        
+
+        private void Awake()
+        {
+            Initialize();
+        }
+
         private void Initialize()
         {
             GameActions.OnTap -= Initialize;

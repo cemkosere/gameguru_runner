@@ -43,8 +43,6 @@ namespace Game.PlayerSystem
                             GameActions.LevelEnd?.Invoke(false);
 
                         });
-                    //Fail
-                    //Rigidbody
                 }
 
                 _isMoving = false;
