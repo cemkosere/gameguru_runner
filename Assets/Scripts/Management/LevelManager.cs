@@ -30,7 +30,7 @@ namespace Management
             var spawnPosition = !CurrentLevel ? Vector3.zero : CurrentLevel.endPoint.position;
             SpawnLevel(spawnPosition);
             SpawnPlayer();
-            CurrentLevel.Initialize(this, CurrentPlayer);
+            CurrentLevel.Initialize(CurrentPlayer);
         }
         private void SpawnLevel(Vector3 position)
         {

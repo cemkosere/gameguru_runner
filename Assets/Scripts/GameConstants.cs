@@ -3,6 +3,6 @@
     public static float PlayerSpeed = 4;
     public static float RoadPieceSpeed = 8;
     public static float MainMeshLength = 5;
-    public static float Tolerance = .25f;
+    public static float ToleranceRatio = .5f;
 
 }
