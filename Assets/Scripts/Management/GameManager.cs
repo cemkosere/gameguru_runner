@@ -1,3 +1,5 @@
+using System;
+using System.Threading.Tasks;
 using Ui.Views;
 using UnityEngine;
 using Zenject;
@@ -49,14 +51,18 @@ namespace Management
 
         private void Success()
         {
+            _levelManager.CurrentLevelCompleted();
             _cameraManager.SetCamera(CameraType.Success);
             GameActions.OnTap += Initialize;
         }
         
-        private void Fail()
+        private async void Fail()
         {
             _cameraManager.SetCamera(CameraType.Fail);
-            //LevelManager'
+            _cameraManager.InitializeSingleCamera(CameraType.Fail, null, null);
+            await Task.Delay(TimeSpan.FromSeconds(1));
+            _levelManager.RemoveLastLevel();
+            Initialize();
         }
     }
 }

@@ -16,7 +16,8 @@ namespace Game.LevelSystem
         public int platformCount = 10;
         
         private LevelManager _levelManager;
-        private Player _player;
+        private IPlayer _player;
+        private List<MainMesh> _allMeshes;
         private Queue<MainMesh> _mainMeshes;
         private Queue<MainMesh> _road;
         private MainMesh _lastMesh;
@@ -25,7 +26,7 @@ namespace Game.LevelSystem
         public static bool IsCompleted;
         
 
-        public void Initialize(LevelManager levelManager, Player player)
+        public void Initialize(LevelManager levelManager, IPlayer player)
         {
             _levelManager = levelManager;
             _player = player;
@@ -36,17 +37,20 @@ namespace Game.LevelSystem
         private void InitializeRoad()
         {
             IsCompleted = false;
+            _allMeshes = new List<MainMesh>();
             _mainMeshes = new Queue<MainMesh>();
             _road = new Queue<MainMesh>();
-            finishLine.position = transform.position + Vector3.forward * (platformCount * 5 + 1);
+            finishLine.position = transform.position + Vector3.forward * (platformCount * GameConstants.MainMeshLength + 1);
             
             for (var i = 0; i < platformCount; i++)
             {
-                _mainMeshes.Enqueue(MainMeshPool.Instance.Rent());
+                var rentMesh = MainMeshPool.Instance.Rent();
+                _allMeshes.Add(rentMesh);
+                _mainMeshes.Enqueue(rentMesh);
             }
 
             var mesh = _mainMeshes.Dequeue();
-            mesh.SetScaleAndPosition(new Vector3(5,1,5), playerSpawnPoint.position);
+            mesh.SetScaleAndPosition(new Vector3(5,1,GameConstants.MainMeshLength), playerSpawnPoint.position);
             mesh.gameObject.SetActive(true);
             _lastMesh = mesh;
             _road.Enqueue(mesh);
@@ -141,6 +145,17 @@ namespace Game.LevelSystem
                 new Vector3(x,mainMesh.Position.y,mainMesh.Position.z));
             return true;
             
+        }
+
+        public void Remove()
+        {
+            foreach (var mesh in _allMeshes)
+            {
+                MainMeshPool.Instance.Return(mesh);
+            }
+            _meshMovementTween.Kill();
+            GameActions.OnTap -= OnTap;
+            Destroy(gameObject);
         }
 
     }

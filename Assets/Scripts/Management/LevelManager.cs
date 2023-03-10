@@ -1,6 +1,8 @@
-﻿using Game;
+﻿using System.Collections.Generic;
+using Game;
 using Game.LevelSystem;
 using Game.PlayerSystem;
+using Unity.VisualScripting;
 using UnityEngine;
 using Zenject;
 
@@ -12,6 +14,8 @@ namespace Management
         [SerializeField] private Player playerPrefab;
         public static Level CurrentLevel;
         public static Player CurrentPlayer;
+
+        private Level _prevCompletedLevel;
 
 
         private CameraManager _cameraManager;
@@ -55,6 +59,19 @@ namespace Management
                 playerTransform.position = CurrentLevel.playerSpawnPoint.position;
                 playerTransform.rotation = Quaternion.identity;
             }
+        }
+
+        public void RemoveLastLevel()
+        {
+            CurrentLevel.Remove();
+            Destroy(CurrentPlayer.gameObject);
+            CurrentPlayer = null;
+            CurrentLevel = _prevCompletedLevel ? _prevCompletedLevel : null;
+        }
+
+        public void CurrentLevelCompleted()
+        {
+            _prevCompletedLevel = CurrentLevel;
         }
 
         public void StartLevel()

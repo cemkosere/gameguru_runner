@@ -13,12 +13,13 @@ namespace Game.PlayerSystem
         private Queue<Vector3> _points = new ();
         private bool _isMoving = false;
         private bool _isDancing = false;
+        private Tween _movingTween;
+        private Sequence _fallingSequence;
         public void AddNewPoint(Vector3 point)
         {
             _points.Enqueue(point);
             if(_isMoving) return;
             Move();
-            
         }
         public void Move()
         {
@@ -31,7 +32,17 @@ namespace Game.PlayerSystem
                 }
                 else
                 {
-                    GameActions.LevelEnd?.Invoke(false);
+                    _movingTween.Kill();
+                    _fallingSequence = DOTween.Sequence();
+                    _fallingSequence
+                        .Append(transform.DOMoveZ(transform.position.z + 1, .1f))
+                        .Append(transform.DOMoveY(transform.position.y - 10, 1f))
+                        .OnComplete(() =>
+                        {
+                            
+                            GameActions.LevelEnd?.Invoke(false);
+
+                        });
                     //Fail
                     //Rigidbody
                 }
@@ -45,8 +56,9 @@ namespace Game.PlayerSystem
         }
         public void MovePoint(Vector3 point, Action callBack = null)
         {
+            var callBackInvoked = false;
             Walk();
-            transform
+            _movingTween = transform
                 .DOLookAt(point, 1000f)
                 .SetSpeedBased(true)
                 .OnComplete(() =>
@@ -54,7 +66,16 @@ namespace Game.PlayerSystem
                         .DOMove(point, GameConstants.PlayerSpeed)
                         .SetSpeedBased(true)
                         .SetEase(Ease.Linear)
-                        .OnComplete(() => callBack?.Invoke()));
+                        .OnUpdate(() =>
+                        {
+                            //su kadar mesafe kaldiginda look at basla
+                            if (Vector3.Distance(transform.position, point) < 1)
+                            {
+                                if(callBackInvoked)return;
+                                callBack?.Invoke();
+                                callBackInvoked = true;
+                            }
+                        }));
         }
         public void Walk()
         {
@@ -64,10 +85,15 @@ namespace Game.PlayerSystem
         }
         public void Dance()
         {
-            if(_isDancing) return;
+            if (_isDancing) return;
             animator.SetTrigger("Dance");
             _isDancing = true;
         }
-        
+
+        private void OnDestroy()
+        {
+            _movingTween.Kill();
+            _fallingSequence.Kill();
+        }
     }
 }
