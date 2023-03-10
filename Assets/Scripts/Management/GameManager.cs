@@ -58,13 +58,14 @@ namespace Management
         {
             _levelManager.CurrentLevelCompleted();
             _cameraManager.SetCamera(CameraType.Success);
+            View.ChangeView(ViewType.Success);
             GameActions.OnTap += Initialize;
         }
         
         private async void Fail()
         {
             _cameraManager.SetCamera(CameraType.Fail);
-            _cameraManager.InitializeSingleCamera(CameraType.Fail, null, null);
+            View.ChangeView(ViewType.Fail);
             await Task.Delay(TimeSpan.FromSeconds(1));
             _levelManager.RemoveLastLevel();
             Initialize();

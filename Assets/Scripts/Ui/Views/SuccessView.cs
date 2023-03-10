@@ -6,7 +6,7 @@
         
         protected override void OnPreShow()
         {
-            base.OnPreShow();
+            
         }
     }
 }

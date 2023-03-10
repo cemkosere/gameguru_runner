@@ -31,6 +31,7 @@ namespace Management
             SpawnLevel(spawnPosition);
             SpawnPlayer();
             CurrentLevel.Initialize(CurrentPlayer);
+            AudioManager.Instance.ResetHit();
         }
         private void SpawnLevel(Vector3 position)
         {
